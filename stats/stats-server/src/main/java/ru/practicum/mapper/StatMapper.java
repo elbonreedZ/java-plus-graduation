@@ -2,7 +2,7 @@ package ru.practicum.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import ru.practicum.StatDto;
+import ru.practicum.dto.StatDto;
 import ru.practicum.model.Stat;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)

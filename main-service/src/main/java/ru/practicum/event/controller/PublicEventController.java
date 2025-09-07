@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.StatDto;
-import ru.practicum.client.StatsClient;
+import ru.practicum.dto.StatDto;
+import ru.practicum.client.StatsClientService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventPublicParam;
 import ru.practicum.event.dto.EventShortDto;
@@ -22,7 +22,7 @@ import java.util.List;
 public class PublicEventController {
 
     private final EventService eventService;
-    private final StatsClient statsClient;
+    private final StatsClientService statsClient;
 
     @GetMapping
     public List<EventShortDto> getAll(@RequestParam(required = false) String text,

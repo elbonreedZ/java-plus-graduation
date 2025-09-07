@@ -1,7 +1,7 @@
 package ru.practicum.event.service;
 
 import org.springframework.data.domain.Pageable;
-import ru.practicum.StatDto;
+import ru.practicum.dto.StatDto;
 import ru.practicum.event.dto.*;
 
 import java.util.List;

@@ -11,11 +11,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.practicum.ResponseStatDto;
-import ru.practicum.StatDto;
+import ru.practicum.dto.ResponseStatDto;
+import ru.practicum.dto.StatDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.service.CategoryService;
-import ru.practicum.client.StatsClient;
+import ru.practicum.client.StatsClientService;
 import ru.practicum.errors.exceptions.ConditionsNotMetException;
 import ru.practicum.errors.exceptions.ForbiddenException;
 import ru.practicum.errors.exceptions.NotFoundException;
@@ -48,9 +48,9 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final CategoryService categoryService;
     private final EventMapper eventMapper;
-    private final StatsClient statsClient;
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final StatsClientService statsClient;
 
     @Override
     @Transactional
