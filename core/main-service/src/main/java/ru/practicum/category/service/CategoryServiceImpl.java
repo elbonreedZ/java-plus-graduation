@@ -93,8 +93,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private void checkCategoryOnExistByName(String name) {
-        if (categoryRepository.findByNameIgnoreCase(name.toLowerCase()) != null) {
-            throw new DataAlreadyInUseException("Category with this name has already exist.");
-        }
+        categoryRepository.findByNameIgnoreCase(name.toLowerCase()).orElseThrow(() ->
+                new DataAlreadyInUseException("Category with this name has already exist."));
     }
+
 }

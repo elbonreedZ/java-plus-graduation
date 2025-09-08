@@ -24,8 +24,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
             JOIN Rating r ON e.id = r.event.id
             WHERE r.mark = 'LIKE'
             GROUP BY e.id
-            ORDER BY COUNT(r.id) DESC
-            LIMIT ?1
             """)
-    List<Event> findMostLikedEvents(int limit);
+    List<Event> findMostLikedEvents(Pageable pageable);
 }

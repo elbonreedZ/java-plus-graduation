@@ -19,7 +19,7 @@ import java.util.Objects;
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Value("${api.log.stacktrace}")
     private boolean isStackTrace;

@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
                 newUserRequest.getEmail().length() < 6 || newUserRequest.getEmail().length() > 254) {
             throw new ValidationException("Length of name or email is out of bounds.");
         }
-        if (userRepository.findByEmail(newUserRequest.getEmail()) != null) {
+        if (userRepository.findByEmail(newUserRequest.getEmail()).isPresent()) {
             throw new DataAlreadyInUseException("Email " + newUserRequest.getEmail() + " already in use.");
         }
         User newUser = userMapper.toUser(newUserRequest);
