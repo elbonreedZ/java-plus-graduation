@@ -2,7 +2,7 @@ package ru.practicum.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.practicum.ResponseStatDto;
+import ru.practicum.dto.ResponseStatDto;
 import ru.practicum.model.Stat;
 
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface StatRepository extends JpaRepository<Stat, Long> {
     @Query("""
-        SELECT new ru.practicum.ResponseStatDto(s.app, s.uri, count(s.ip))
+        SELECT new ru.practicum.dto.ResponseStatDto(s.app, s.uri, count(s.ip))
         FROM Stat AS s
         WHERE s.timestamp BETWEEN :start AND :end AND s.uri IN :uris
         GROUP BY s.app, s.uri
@@ -21,7 +21,7 @@ public interface StatRepository extends JpaRepository<Stat, Long> {
                                           List<String> uris);
 
     @Query("""
-        SELECT new ru.practicum.ResponseStatDto(s.app, s.uri, count(s.ip))
+        SELECT new ru.practicum.dto.ResponseStatDto(s.app, s.uri, count(s.ip))
         FROM Stat AS s
         WHERE s.timestamp BETWEEN :start AND :end
         GROUP BY s.app, s.uri
@@ -31,7 +31,7 @@ public interface StatRepository extends JpaRepository<Stat, Long> {
                                              LocalDateTime end);
 
     @Query("""
-        SELECT new ru.practicum.ResponseStatDto(s.app, s.uri, count(DISTINCT s.ip))
+        SELECT new ru.practicum.dto.ResponseStatDto(s.app, s.uri, count(DISTINCT s.ip))
         FROM Stat AS s
         WHERE s.timestamp BETWEEN :start AND :end AND s.uri IN :uris
         GROUP BY s.app, s.uri
@@ -42,7 +42,7 @@ public interface StatRepository extends JpaRepository<Stat, Long> {
                                                      List<String> uris);
 
     @Query("""
-        SELECT new ru.practicum.ResponseStatDto(s.app, s.uri, count(DISTINCT s.ip))
+        SELECT new ru.practicum.dto.ResponseStatDto(s.app, s.uri, count(DISTINCT s.ip))
         FROM Stat AS s
         WHERE s.timestamp BETWEEN :start AND :end
         GROUP BY s.app, s.uri
