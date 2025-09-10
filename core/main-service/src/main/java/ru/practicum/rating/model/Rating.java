@@ -5,10 +5,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.event.model.Event;
 import ru.practicum.rating.mark.Mark;
-import ru.practicum.user.model.User;
 
 @Entity
-@Table(name = "ratings")
+@Table(name = "ratings", schema = "core_events")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,10 +19,8 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @ToString.Exclude
-    private User user;
+    @Column(name = "user_id")
+    private long userId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     @ToString.Exclude

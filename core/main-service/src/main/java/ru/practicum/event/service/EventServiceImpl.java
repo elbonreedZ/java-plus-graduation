@@ -11,11 +11,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.practicum.dto.ResponseStatDto;
-import ru.practicum.dto.StatDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.service.CategoryService;
 import ru.practicum.client.StatsClientService;
+import ru.practicum.client.UserClient;
+import ru.practicum.dto.ResponseStatDto;
+import ru.practicum.dto.StatDto;
+import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.errors.exceptions.ConditionsNotMetException;
 import ru.practicum.errors.exceptions.ForbiddenException;
 import ru.practicum.errors.exceptions.NotFoundException;
@@ -29,8 +31,6 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
-import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class EventServiceImpl implements EventService {
     private final CategoryService categoryService;
     private final EventMapper eventMapper;
     private final RequestRepository requestRepository;
-    private final UserRepository userRepository;
+    private final UserClient userClient;
     private final StatsClientService statsClient;
 
     @Override
@@ -59,35 +59,33 @@ public class EventServiceImpl implements EventService {
         if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ForbiddenException("Начало события ранее, чем через два часа: " + eventDate);
         }
-
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User with id = " + userId + " not found.")
-        );
-
+        UserShortDto user = userClient.getById(userId);
         long categoryId = newEvent.getCategory();
         Category category = categoryService.findByIdOrThrow(categoryId);
-        Event event = eventMapper.toEvent(newEvent, category, user);
-        return eventMapper.toFullDto(eventRepository.save(event));
+        Event event = eventMapper.toEvent(newEvent, category, userId);
+        event = eventRepository.save(event);
+        return eventMapper.toFullDto(event, user);
     }
 
     @Override
     public List<EventShortDto> getAllByUser(long userId, Pageable pageable) {
-        List<Event> events = eventRepository.findAllByInitiator_Id(userId, pageable);
+        List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable);
         events = applyConfirmedRequestsToEvents(events);
-        return eventMapper.toEventShortDtoList(events);
+        return mapToShortDtos(events);
     }
 
     @Override
     public EventFullDto getByIdPrivate(long eventId, long userId) {
-        Event event = findByIdAndInitiator(eventId, userId);
+        Event event = findByIdAndInitiatorId(eventId, userId);
         applyConfirmedRequestsToEvent(event);
-        return eventMapper.toFullDto(event);
+        UserShortDto user = userClient.getById(userId);
+        return eventMapper.toFullDto(event, user);
     }
 
     @Override
     @Transactional
     public EventFullDto updatePrivate(long userId, long eventId, EventUserUpdateDto eventUpdate) {
-        Event event = findByIdAndInitiator(eventId, userId);
+        Event event = findByIdAndInitiatorId(eventId, userId);
 
         boolean isPublished = event.getState() == EventState.PUBLISHED;
         if (isPublished) {
@@ -117,8 +115,10 @@ public class EventServiceImpl implements EventService {
         }
 
         Event updated = eventMapper.toEventFromEventUserUpdateDto(eventUpdate, event);
+        updated = eventRepository.save(updated);
+        UserShortDto user = userClient.getById(updated.getInitiatorId());
 
-        return eventMapper.toFullDto(eventRepository.save(updated));
+        return eventMapper.toFullDto(updated, user);
     }
 
     @Override
@@ -141,15 +141,16 @@ public class EventServiceImpl implements EventService {
         }
 
         Event updated = eventMapper.toEventFromEventAdminUpdateDto(eventUpdate, event);
-
-        return eventMapper.toFullDto(eventRepository.save(updated));
+        UserShortDto user = userClient.getById(updated.getInitiatorId());
+        updated = eventRepository.save(updated);
+        return eventMapper.toFullDto(updated, user);
     }
 
     @Override
     public List<EventFullDto> getAllByAdmin(EventAdminParam params) {
         List<Long> users = params.getUsers();
         BooleanExpression byUsers = (users != null && !users.isEmpty())
-                ? QEvent.event.initiator.id.in(users) : null;
+                ? QEvent.event.initiatorId.in(users) : null;
 
         List<EventState> states = params.getStates();
         BooleanExpression byStates = (states != null && !states.isEmpty())
@@ -211,9 +212,7 @@ public class EventServiceImpl implements EventService {
             events = filterByAvailability(events);
         }
 
-        List<EventShortDto> eventShorts = eventMapper.toEventShortDtoList(events);
-
-        return applyViewsToEvents(eventShorts);
+        return mapToShortDtos(events);
     }
 
     @Override
@@ -223,8 +222,8 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Событие с id: " + eventId + " не найдено");
         }
         applyConfirmedRequestsToEvent(event);
-
-        EventFullDto eventFullDto = eventMapper.toFullDto(event);
+        UserShortDto user = userClient.getById(event.getInitiatorId());
+        EventFullDto eventFullDto = eventMapper.toFullDto(event, user);
         List<ResponseStatDto> stats = statsClient.getStats(LocalDateTime.now().minusMonths(1), LocalDateTime.now(),
                 List.of(statDto.getUri()), true);
 
@@ -237,13 +236,23 @@ public class EventServiceImpl implements EventService {
         return eventFullDto;
     }
 
+    @Override
+    public List<EventShortDto> getShortEvents(List<Event> events) {
+        return mapToShortDtos(events);
+    }
+
+    @Override
+    public List<Event> getAllByIds(List<Long> eventsIds) {
+        return eventRepository.findAllByIdIn(eventsIds);
+    }
+
     private Event findById(long eventId) {
         return eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие с id: " + eventId + " не существует"));
     }
 
-    private Event findByIdAndInitiator(long eventId, long initiatorId) {
-        return eventRepository.findByIdAndInitiator_Id(eventId, initiatorId).orElseThrow(() ->
+    private Event findByIdAndInitiatorId(long eventId, long initiatorId) {
+        return eventRepository.findByIdAndInitiatorId(eventId, initiatorId).orElseThrow(() ->
                 new NotFoundException("Событие с id: " + eventId + " не существует"));
     }
 
@@ -324,5 +333,13 @@ public class EventServiceImpl implements EventService {
         return events.stream()
                 .filter(event -> event.getConfirmedRequests() < event.getParticipantLimit())
                 .collect(Collectors.toList());
+    }
+
+    private List<EventShortDto> mapToShortDtos(List<Event> events) {
+        List<Long> usersIds = events.stream().map(Event::getInitiatorId).toList();
+        Map<Long, UserShortDto> usersByIds = userClient.getAllUsersByIds(usersIds);
+        List<EventShortDto> eventShortDtos = eventMapper.toEventShortDtoList(events, usersByIds);
+        eventShortDtos = applyViewsToEvents(eventShortDtos);
+        return eventShortDtos;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.errors.exceptions.DataAlreadyInUseException;
 import ru.practicum.errors.exceptions.NotFoundException;
 import ru.practicum.errors.exceptions.ValidationException;
@@ -17,6 +18,8 @@ import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +42,29 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findAllByIdIn(param.getIds(), PageRequest.of(from, size));
         log.info("Got all users, count = {}.", users.size());
         return userMapper.toUserDtoList(users);
+    }
+
+    @Override
+    public Map<Long, UserShortDto> getAllUsersByIds(List<Long> userIds) {
+        List<User> users = userRepository.findAllByIdIn(userIds);
+
+        return users.stream()
+                .collect(Collectors.toMap(
+                        User::getId,
+                        userMapper::toUserShortDto
+                ));
+    }
+
+    @Override
+    public UserShortDto getById(Long id) {
+        return userMapper.toUserShortDto(findById(id));
+    }
+
+    @Override
+    public void checkUserExists(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("User with id = " + id + " not found.");
+        }
     }
 
     @Override
@@ -68,11 +94,12 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
     }
 
-    @Override
-    public User findById(long userId) {
+    private User findById(long userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("User with id = " + userId + " not found."));
         log.info("User was found. ID = {}", user.getId());
         return user;
     }
+
+
 }

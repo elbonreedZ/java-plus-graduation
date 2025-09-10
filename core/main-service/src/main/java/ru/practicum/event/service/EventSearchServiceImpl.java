@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.client.UserClient;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
@@ -21,7 +22,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class EventSearchServiceImpl implements EventSearchService {
     EventRepository eventRepository;
-    EventMapper eventMapper;
+    EventService eventService;
 
     @Transactional
     @Override
@@ -29,6 +30,6 @@ public class EventSearchServiceImpl implements EventSearchService {
         int limit = eventSearchByRatingParam.getLimit();
         Pageable pageable = PageRequest.of(0, limit, Sort.Direction.DESC);
         List<Event> events = eventRepository.findMostLikedEvents(pageable);
-        return eventMapper.toEventShortDtoList(events);
+        return eventService.getShortEvents(events);
     }
 }

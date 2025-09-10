@@ -17,10 +17,10 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.event.service.EventService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,20 +29,16 @@ public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;
-    private final EventMapper eventMapper;
-    private final EventRepository eventRepository;
+    private final EventService eventService;
 
     @Override
     @Transactional
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
-        List<Event> eventList = new ArrayList<>();
-        if (newCompilationDto.getEvents() != null) {
-            eventList = eventRepository.findAllByIdIn(newCompilationDto.getEvents());
-        }
+        List<Event> eventList = eventService.getAllByIds(newCompilationDto.getEvents());
         Compilation compilation = compilationMapper.toCompilation(newCompilationDto);
         compilation.setEvents(eventList);
         compilationRepository.save(compilation);
-        return mapToDto(compilation, compilation.getEvents());
+        return mapToDto(compilation);
     }
 
     @Override
@@ -59,15 +55,16 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto updateCompilation(long compId, UpdateCompilationRequest updateCompilationRequest) {
         Compilation compilationFromTable = compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFoundException("Compilation with id = " + compId + " not found."));
+
         if (updateCompilationRequest.getEvents() != null && !updateCompilationRequest.getEvents().isEmpty()) {
-            compilationFromTable.setEvents(eventRepository.findAllByIdIn(updateCompilationRequest.getEvents()));
+            compilationFromTable.setEvents(eventService.getAllByIds(updateCompilationRequest.getEvents()));
         }
         if (updateCompilationRequest.getPinned() != null)
             compilationFromTable.setPinned(updateCompilationRequest.getPinned());
         if (updateCompilationRequest.getTitle() != null)
             compilationFromTable.setTitle(updateCompilationRequest.getTitle());
-        compilationRepository.save(compilationFromTable);
-        return mapToDto(compilationFromTable, compilationFromTable.getEvents());
+        compilationFromTable = compilationRepository.save(compilationFromTable);
+        return mapToDto(compilationFromTable);
     }
 
     public List<CompilationDto> getAllCompilations(CompilationParam param) {
@@ -78,9 +75,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         List<CompilationDto> compilationDtoList = new ArrayList<>();
         for (Compilation compilation : compilations) {
-            List<Event> eventList = eventRepository.findAllByIdIn(compilation.getEvents().stream().map(Event::getId)
-                    .collect(Collectors.toList()));
-            CompilationDto compilationDto = mapToDto(compilation, eventList);
+            CompilationDto compilationDto = mapToDto(compilation);
             compilationDtoList.add(compilationDto);
         }
         return compilationDtoList;
@@ -90,14 +85,11 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto getCompilationById(long compId) {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFoundException("Compilation with id = " + compId + " not found."));
-        List<Event> eventList = eventRepository.findAllByIdIn(compilation.getEvents().stream().map(Event::getId)
-                .collect(Collectors.toList()));
-
-        return mapToDto(compilation, eventList);
+        return mapToDto(compilation);
     }
 
-    private CompilationDto mapToDto(Compilation compilation, List<Event> eventList) {
-        List<EventShortDto> eventsToSet = eventMapper.toEventShortDtoList(eventList);
+    private CompilationDto mapToDto(Compilation compilation) {
+        List<EventShortDto> eventsToSet = eventService.getShortEvents(compilation.getEvents());
         CompilationDto compilationDto = compilationMapper.toCompilationDto(compilation);
         compilationDto.setEvents(eventsToSet);
         return compilationDto;

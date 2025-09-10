@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.client.UserClient;
 import ru.practicum.errors.exceptions.ConditionsNotMetException;
 import ru.practicum.errors.exceptions.NotFoundException;
 import ru.practicum.event.model.Event;
@@ -17,8 +18,6 @@ import ru.practicum.rating.mapper.RatingMapper;
 import ru.practicum.rating.mark.Mark;
 import ru.practicum.rating.model.Rating;
 import ru.practicum.rating.repository.RatingRepository;
-import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
 
 @Service
 @Slf4j
@@ -27,7 +26,7 @@ import ru.practicum.user.repository.UserRepository;
 public class RatingServiceImpl implements RatingService {
     RatingRepository ratingRepository;
     RatingMapper ratingMapper;
-    UserRepository userRepository;
+    UserClient userClient;
     EventRepository eventRepository;
 
     @Override
@@ -39,15 +38,11 @@ public class RatingServiceImpl implements RatingService {
                     String.format("Пользователь с ID %d уже оценивал событие с ID %d", userId, eventId));
         }
 
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("User with id = " + userId + " not found."));
-
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Event with id = " + eventId + " not found."));
 
-        Rating newMark = getRating(newRatingDto, user, event);
-        newMark.setUser(user);
-        newMark.setEvent(event);
+        userClient.checkUserExists(userId);
+        Rating newMark = getRating(newRatingDto, userId, event);
         ratingRepository.save(newMark);
         log.info("Rating mark: {} created.", newMark);
         return ratingMapper.toRatingDto(newMark);
@@ -78,7 +73,7 @@ public class RatingServiceImpl implements RatingService {
                         "Rating mark not found. id = '%d'", ratingId))
         );
 
-        if (userId != ratingMark.getUser().getId()) {
+        if (userId != ratingMark.getUserId()) {
             throw new ConditionsNotMetException("User with id = " + userId + " is not author of mark");
         }
 
@@ -90,9 +85,9 @@ public class RatingServiceImpl implements RatingService {
         log.info("Rating mark '{}' deleted", ratingId);
     }
 
-    private static Rating getRating(NewRatingDto newRatingDto, User user, Event event) {
+    private static Rating getRating(NewRatingDto newRatingDto, long userId, Event event) {
         return Rating.builder()
-                .user(user)
+                .userId(userId)
                 .event(event)
                 .mark(newRatingDto.getMark())
                 .build();

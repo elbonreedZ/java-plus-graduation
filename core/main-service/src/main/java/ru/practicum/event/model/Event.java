@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.model.Category;
-import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "events")
+@Table(name = "events", schema = "core_events")
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +29,8 @@ public class Event {
     LocalDateTime eventDate;
     @Column(name = "description")
     String description;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "initiator_id")
-    User initiator;
+    @Column(name = "initiator_id")
+    long initiatorId;
     @Embedded
     Location location;
     @Column(name = "paid")

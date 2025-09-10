@@ -12,14 +12,14 @@ import java.util.List;
 public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findAllByEvent_Id(long eventId);
 
-    List<Request> findAllByRequester_Id(long userId);
+    List<Request> findAllByRequesterId(long userId);
 
 
     @Query("""
     SELECT r
     FROM Request r
     JOIN Event e ON r.event.id = e.id
-    WHERE e.initiator.id = ?1 AND e.id = ?2
+    WHERE e.initiatorId = ?1 AND e.id = ?2
     """)
     List<Request> findAllByInitiatorIdAndEventId(long userId, long eventId);
 

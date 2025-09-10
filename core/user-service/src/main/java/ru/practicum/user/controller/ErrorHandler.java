@@ -1,4 +1,4 @@
-package ru.practicum.errors;
+package ru.practicum.user.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.errors.ApiError;
 import ru.practicum.errors.exceptions.*;
 
 import java.io.PrintWriter;

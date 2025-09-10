@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "compilations")
+@Table(name = "compilations", schema = "core_events")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Compilation {
     @Id
@@ -21,8 +21,9 @@ public class Compilation {
     Long id;
     @ManyToMany
     @JoinTable(name = "compilations_events",
-            joinColumns = @JoinColumn(name = "compilation_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id"))
+                schema = "core_events",
+                joinColumns = @JoinColumn(name = "compilation_id"),
+                inverseJoinColumns = @JoinColumn(name = "event_id"))
     List<Event> events;
     @Column(name = "is_pinned")
     Boolean pinned;

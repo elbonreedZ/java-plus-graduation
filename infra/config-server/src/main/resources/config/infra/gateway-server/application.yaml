@@ -55,11 +55,11 @@ spring:
             - Path=/users/*/events/*/requests/**
 
         - id: user_route_root
-          uri: lb://main-service
+          uri: lb://user-service
           predicates:
             - Path=/admin/users
         - id: user_route_all
-          uri: lb://main-service
+          uri: lb://user-service
           predicates:
             - Path=/admin/users/**
 
