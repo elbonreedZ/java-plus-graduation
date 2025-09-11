@@ -3,6 +3,7 @@ package ru.practicum.event.mapper;
 import org.mapstruct.*;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.model.Category;
+import ru.practicum.dto.event.EventForRequestDto;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
@@ -46,6 +47,7 @@ public interface EventMapper {
         return eventShortDtos;
     }
 
+    @Mapping(target = "initiator", source = "initiatorId")
     List<EventFullDto> toEventFullDtoList(List<Event> events);
 
     @Mapping(target = "category", ignore = true)
@@ -53,4 +55,6 @@ public interface EventMapper {
     @Mapping(target = "eventDate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Event toEventFromEventAdminUpdateDto(EventAdminUpdateDto dto, @MappingTarget Event event);
+
+    EventForRequestDto toEventForRequestDto(Event event);
 }

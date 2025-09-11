@@ -11,7 +11,7 @@ public interface RequestService {
 
     List<ParticipationRequestDto> getAllByParticipantId(long userId);
 
-    List<ParticipationRequestDto> getAllByInitiatorIdAndEventId(long userId, long eventId);
+   List<ParticipationRequestDto> getAllByInitiatorIdAndEventId(long userId, long eventId);
 
     EventRequestStatusUpdateResult changeEventRequestsStatusByInitiator(EventRequestStatusUpdateRequest updateRequest, long userId, long eventId);
 

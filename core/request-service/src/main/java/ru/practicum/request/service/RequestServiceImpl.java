@@ -6,18 +6,18 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.client.EventClient;
 import ru.practicum.client.UserClient;
+import ru.practicum.dto.event.EventForRequestDto;
+import ru.practicum.enums.event.EventState;
 import ru.practicum.errors.exceptions.ConditionsNotMetException;
 import ru.practicum.errors.exceptions.NotFoundException;
-import ru.practicum.event.model.Event;
-import ru.practicum.event.model.EventState;
-import ru.practicum.event.repository.EventRepository;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
-import ru.practicum.request.model.RequestStatus;
+import ru.practicum.enums.request.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 
 import java.time.LocalDateTime;
@@ -26,20 +26,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
-    UserClient userClient;
-    EventRepository eventRepository;
-    RequestRepository requestRepository;
-    RequestMapper requestMapper;
+    private final UserClient userClient;
+    private final EventClient eventClient;
+    private final RequestRepository requestRepository;
+    private final RequestMapper requestMapper;
 
     @Override
     @Transactional
     public ParticipationRequestDto createParticipationRequest(long userId, long eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException(String.format("Событие с id=%d не найдено", eventId))
-        );
+
+        EventForRequestDto event = eventClient.getById(eventId);
 
         if (event.getState() != EventState.PUBLISHED) {
             throw new ConditionsNotMetException("Нельзя участвовать в неопубликованном событии");
@@ -56,12 +54,12 @@ public class RequestServiceImpl implements RequestService {
         RequestStatus status = RequestStatus.PENDING;
         if (event.getParticipantLimit() == 0) {
             status = RequestStatus.CONFIRMED;
-        } else if (!event.isRequestModeration()) {
+        } else if (!event.getRequestModeration()) {
             status = RequestStatus.CONFIRMED;
         }
 
         Request request = Request.builder()
-                .event(event)
+                .eventId(event.getId())
                 .requesterId(userId)
                 .status(status)
                 .created(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS))
@@ -84,17 +82,20 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<ParticipationRequestDto> getAllByInitiatorIdAndEventId(long userId, long eventId) {
-        List<Request> foundRequests = requestRepository.findAllByInitiatorIdAndEventId(userId, eventId);
+        if (!eventClient.checkUserIsInitiator(userId, eventId)) {
+            throw new ConditionsNotMetException("Пользователь не является владельцем события.");
+        }
+        List<Request> foundRequests = requestRepository.findAllByEventId(eventId);
         return requestMapper.toDtoList(foundRequests);
     }
 
     @Override
     @Transactional
     public EventRequestStatusUpdateResult changeEventRequestsStatusByInitiator(EventRequestStatusUpdateRequest updateRequest, long userId, long eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException(String.format("Событие с id=%d не найдено", eventId))
-        );
-
+        EventForRequestDto event = eventClient.getById(eventId);
+        if (event.getInitiatorId() != userId) {
+            throw new ConditionsNotMetException("Пользователь не является владельцем события.");
+        }
         List<Long> requestIds = updateRequest.getRequestIds();
         List<Request> foundRequests = requestRepository.findAllById(requestIds);
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
@@ -109,7 +110,7 @@ public class RequestServiceImpl implements RequestService {
 
         switch (updateRequest.getStatus()) {
             case CONFIRMED -> handleConfirmedRequests(event, foundRequests, result, confirmed, rejected);
-            case REJECTED -> handleRejectedRequests(foundRequests, result, rejected);
+            case REJECTED -> handleRejectedRequests(foundRequests, rejected);
         }
 
         result.setConfirmedRequests(confirmed);
@@ -150,10 +151,10 @@ public class RequestServiceImpl implements RequestService {
         requestRepository.updateStatus(status, ids);
     }
 
-    private void handleConfirmedRequests(Event event, List<Request> foundRequests, EventRequestStatusUpdateResult result, List<ParticipationRequestDto> confirmed, List<ParticipationRequestDto> rejected) {
+    private void handleConfirmedRequests(EventForRequestDto event, List<Request> foundRequests, EventRequestStatusUpdateResult result, List<ParticipationRequestDto> confirmed, List<ParticipationRequestDto> rejected) {
         int confirmedRequests = getConfirmedRequests(event.getId());
         int participantLimit = event.getParticipantLimit();
-        if (participantLimit == 0 || !event.isRequestModeration()) {
+        if (participantLimit == 0 || !event.getRequestModeration()) {
             result.setConfirmedRequests(requestMapper.toDtoList(foundRequests));
             return;
         }
@@ -171,7 +172,7 @@ public class RequestServiceImpl implements RequestService {
         updateStatus(RequestStatus.CONFIRMED, confirmedRequestIds);
     }
 
-    private void handleRejectedRequests(List<Request> foundRequests, EventRequestStatusUpdateResult result, List<ParticipationRequestDto> rejected) {
+    private void handleRejectedRequests(List<Request> foundRequests, List<ParticipationRequestDto> rejected) {
         for (Request request : foundRequests) {
             request.setStatus(RequestStatus.REJECTED);
             rejected.add(requestMapper.toDto(request));

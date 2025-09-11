@@ -1,11 +1,12 @@
 package ru.practicum.request.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.request.model.RequestStatus;
+import ru.practicum.enums.request.RequestStatus;
 
 import java.time.LocalDateTime;
 

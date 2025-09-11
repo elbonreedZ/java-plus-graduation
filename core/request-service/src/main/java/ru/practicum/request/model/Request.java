@@ -3,7 +3,7 @@ package ru.practicum.request.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.event.model.Event;
+import ru.practicum.enums.request.RequestStatus;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "requests", schema = "core_events")
+@Table(name = "requests", schema = "core_requests")
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +30,6 @@ public class Request {
     @Column(name = "requester_id")
     long requesterId;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    Event event;
+    @Column(name = "event_id")
+    long eventId;
 }

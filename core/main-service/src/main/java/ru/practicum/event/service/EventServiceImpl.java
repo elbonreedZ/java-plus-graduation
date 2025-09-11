@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.service.CategoryService;
+import ru.practicum.client.RequestClient;
 import ru.practicum.client.StatsClientService;
 import ru.practicum.client.UserClient;
 import ru.practicum.dto.ResponseStatDto;
 import ru.practicum.dto.StatDto;
 import ru.practicum.dto.user.UserShortDto;
+import ru.practicum.enums.event.EventState;
 import ru.practicum.errors.exceptions.ConditionsNotMetException;
 import ru.practicum.errors.exceptions.ForbiddenException;
 import ru.practicum.errors.exceptions.NotFoundException;
@@ -25,16 +27,11 @@ import ru.practicum.errors.exceptions.ValidationException;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.EventState;
 import ru.practicum.event.model.QEvent;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.request.model.Request;
-import ru.practicum.request.model.RequestStatus;
-import ru.practicum.request.repository.RequestRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -48,9 +45,9 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final CategoryService categoryService;
     private final EventMapper eventMapper;
-    private final RequestRepository requestRepository;
     private final UserClient userClient;
     private final StatsClientService statsClient;
+    private final RequestClient requestClient;
 
     @Override
     @Transactional
@@ -314,18 +311,15 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> applyConfirmedRequestsToEvents(List<Event> events) {
         List<Long> eventsIds = events.stream().map(Event::getId).toList();
-        Map<Long, List<Request>> requestsByEventIds = requestRepository
-                .findAllByEvent_IdInAndStatusEquals(eventsIds, RequestStatus.CONFIRMED).stream()
-                .collect(Collectors.groupingBy(request -> request.getEvent().getId()));
+        Map<Long, Integer> requestsByEventIds = requestClient.getCountConfirmedRequestsByEventIds(eventsIds);
 
-        return events.stream().peek(event -> {
-            List<Request> confirmedRequests = requestsByEventIds.getOrDefault(event.getId(), Collections.emptyList());
-            event.setConfirmedRequests(confirmedRequests.size());
-        }).collect(Collectors.toList());
+        return events.stream().peek(event ->
+            event.setConfirmedRequests(requestsByEventIds.getOrDefault(event.getId(), 0))
+        ).collect(Collectors.toList());
     }
 
     private void applyConfirmedRequestsToEvent(Event event) {
-        int confirmed = requestRepository.findCountOfConfirmedRequestsByEventId(event.getId());
+        int confirmed = requestClient.getCountConfirmedRequestsByEventId(event.getId());
         event.setConfirmedRequests(confirmed);
     }
 

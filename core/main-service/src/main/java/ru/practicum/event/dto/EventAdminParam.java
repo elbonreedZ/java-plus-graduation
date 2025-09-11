@@ -3,7 +3,7 @@ package ru.practicum.event.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.event.model.EventState;
+import ru.practicum.enums.event.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -26,4 +26,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
             GROUP BY e.id
             """)
     List<Event> findMostLikedEvents(Pageable pageable);
+
+    boolean existsByInitiatorIdAndId(long initiatorId, long eventId);
 }
