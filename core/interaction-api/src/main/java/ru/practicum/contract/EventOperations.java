@@ -11,4 +11,7 @@ public interface EventOperations {
 
     @GetMapping("check/user/{userId}/event/{eventId}")
     boolean checkUserIsInitiator(@PathVariable long userId, @PathVariable long eventId);
+
+    @GetMapping("/exists/{id}")
+    void checkExistsById(@PathVariable long id);
 }
