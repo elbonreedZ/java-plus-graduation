@@ -6,6 +6,6 @@ import lombok.Data;
 @Embeddable
 @Data
 public class Location {
-    float lat;
-    float lon;
+    private float lat;
+    private float lon;
 }

@@ -9,8 +9,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateRatingParam {
-    Long ratingId;
-    UpdateRatingDto updateRatingDto;
+    private Long ratingId;
+    private UpdateRatingDto updateRatingDto;
 }

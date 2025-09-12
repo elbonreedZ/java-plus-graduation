@@ -31,7 +31,7 @@ public class PrivateEventController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getAllByUser(@RequestParam(defaultValue = "0") int from,
-                                      @RequestParam(defaultValue = "10") int size, @PathVariable long userId) {
+                                            @RequestParam(defaultValue = "10") int size, @PathVariable long userId) {
         return eventService.getAllByUser(userId, PageRequest.of(from, size));
     }
 

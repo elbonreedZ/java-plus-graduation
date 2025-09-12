@@ -9,9 +9,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompilationParam {
-    Boolean isPinned;
-    int from;
-    int size;
+    private Boolean isPinned;
+    private int from;
+    private int size;
 }

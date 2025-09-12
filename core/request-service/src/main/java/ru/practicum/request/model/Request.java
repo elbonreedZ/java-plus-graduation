@@ -7,7 +7,6 @@ import ru.practicum.enums.request.RequestStatus;
 
 import java.time.LocalDateTime;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,18 +17,18 @@ import java.time.LocalDateTime;
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    RequestStatus status;
+    private RequestStatus status;
 
     @Column(name = "created", nullable = false)
-    LocalDateTime created;
+    private LocalDateTime created;
 
     @Column(name = "requester_id")
-    long requesterId;
+    private long requesterId;
 
     @Column(name = "event_id")
-    long eventId;
+    private long eventId;
 }

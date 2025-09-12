@@ -18,20 +18,24 @@ import ru.practicum.rating.mark.Mark;
 import ru.practicum.rating.model.Rating;
 import ru.practicum.rating.repository.RatingRepository;
 
-import java.util.List;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RatingServiceImpl implements RatingService {
-    RatingRepository ratingRepository;
-    RatingMapper ratingMapper;
-    UserClient userClient;
-    EventClient eventClient;
+    private final RatingRepository ratingRepository;
+    private final RatingMapper ratingMapper;
+    private final UserClient userClient;
+    private final EventClient eventClient;
+
+    private static Rating getRating(NewRatingDto newRatingDto, long userId, long eventId) {
+        return Rating.builder()
+                .userId(userId)
+                .eventId(eventId)
+                .mark(newRatingDto.getMark())
+                .build();
+    }
 
     @Override
-    @Transactional
     public RatingDto create(long userId, long eventId, NewRatingDto newRatingDto) {
         boolean exists = ratingRepository.existsByUserIdAndEventId(userId, eventId);
         if (exists) {
@@ -41,10 +45,7 @@ public class RatingServiceImpl implements RatingService {
 
         eventClient.checkExistsById(eventId);
         userClient.checkUserExists(userId);
-        Rating newMark = getRating(newRatingDto, userId, eventId);
-        ratingRepository.save(newMark);
-        log.info("Rating mark: {} created.", newMark);
-        return ratingMapper.toRatingDto(newMark);
+        return ratingMapper.toRatingDto(saveRating(newRatingDto, userId, eventId));
     }
 
     @Override
@@ -82,11 +83,9 @@ public class RatingServiceImpl implements RatingService {
         log.info("Rating mark '{}' deleted", ratingId);
     }
 
-    private static Rating getRating(NewRatingDto newRatingDto, long userId, long eventId) {
-        return Rating.builder()
-                .userId(userId)
-                .eventId(eventId)
-                .mark(newRatingDto.getMark())
-                .build();
+    @Transactional
+    private Rating saveRating(NewRatingDto dto, long userId, long eventId) {
+        Rating newMark = getRating(dto, userId, eventId);
+        return ratingRepository.save(newMark);
     }
 }

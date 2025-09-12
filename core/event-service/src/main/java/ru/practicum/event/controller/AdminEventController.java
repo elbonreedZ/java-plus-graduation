@@ -7,10 +7,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.enums.event.EventState;
 import ru.practicum.event.dto.EventAdminParam;
 import ru.practicum.event.dto.EventAdminUpdateDto;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.enums.event.EventState;
 import ru.practicum.event.service.EventService;
 
 import java.time.LocalDateTime;
@@ -46,6 +46,6 @@ public class AdminEventController {
     @PatchMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto update(@PathVariable long eventId, @RequestBody @Valid EventAdminUpdateDto eventUpdate) {
-        return  eventService.updateAdmin(eventId, eventUpdate);
+        return eventService.updateAdmin(eventId, eventUpdate);
     }
 }

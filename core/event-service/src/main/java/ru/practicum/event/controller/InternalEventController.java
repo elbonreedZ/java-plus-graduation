@@ -1,7 +1,6 @@
 package ru.practicum.event.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +15,7 @@ import ru.practicum.event.service.EventInternalService;
 public class InternalEventController implements EventOperations {
 
     private final EventInternalService eventService;
+
     @Override
     @GetMapping("/{id}")
     public EventForRequestDto getById(@PathVariable Long id) {

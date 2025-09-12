@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.dto.rating.EventSearchByRatingParam;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.EventSearchService;
-import ru.practicum.dto.rating.EventSearchByRatingParam;
 
 import java.util.List;
 

@@ -1,37 +1,39 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.enums.event.EventState;
 import ru.practicum.event.model.Location;
-import ru.practicum.dto.user.UserShortDto;
 
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventFullDto {
-    long id;
-    String annotation;
-    CategoryDto category;
-    int confirmedRequests;
+    private long id;
+    private String annotation;
+    private CategoryDto category;
+    private int confirmedRequests;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime createdOn;
+    private LocalDateTime createdOn;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime eventDate;
-    String description;
-    UserShortDto initiator;
-    Location location;
-    boolean paid;
-    int participantLimit;
+    private LocalDateTime eventDate;
+    private String description;
+    private UserShortDto initiator;
+    private Location location;
+    private boolean paid;
+    private int participantLimit;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime publishedOn;
-    boolean requestModeration;
-    EventState state;
-    String title;
-    long views;
+    private LocalDateTime publishedOn;
+    private boolean requestModeration;
+    private EventState state;
+    private String title;
+    private long views;
 }

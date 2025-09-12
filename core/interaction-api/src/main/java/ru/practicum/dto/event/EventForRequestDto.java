@@ -9,9 +9,9 @@ import ru.practicum.enums.event.EventState;
 @Builder
 @AllArgsConstructor
 public class EventForRequestDto {
-    Long id;
-    Long initiatorId;
-    Integer participantLimit;
-    EventState state;
-    Boolean requestModeration;
+    private Long id;
+    private Long initiatorId;
+    private Integer participantLimit;
+    private EventState state;
+    private Boolean requestModeration;
 }

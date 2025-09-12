@@ -12,11 +12,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewCompilationDto {
-    Boolean pinned = false;
+    private Boolean pinned = false;
     @NotBlank
     @Size(min = 1, max = 50, message = "Length of title must be more than 0 and less than 51.")
-    String title;
-    List<Long> events;
+    private String title;
+    private List<Long> events;
 }

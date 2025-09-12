@@ -11,9 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserAdminParam {
-    int from;
-    int size;
-    List<Long> ids;
+    private int from;
+    private int size;
+    private List<Long> ids;
 }

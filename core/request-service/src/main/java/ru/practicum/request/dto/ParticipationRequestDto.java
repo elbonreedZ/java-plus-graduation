@@ -1,6 +1,5 @@
 package ru.practicum.request.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,12 +11,11 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
 public class ParticipationRequestDto {
-    Long id;
-    Long requester;
-    Long event;
-    RequestStatus status;
-    LocalDateTime created;
+    private Long id;
+    private Long requester;
+    private Long event;
+    private RequestStatus status;
+    private LocalDateTime created;
 }

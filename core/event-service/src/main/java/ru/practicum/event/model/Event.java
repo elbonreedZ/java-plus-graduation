@@ -8,7 +8,6 @@ import ru.practicum.enums.event.EventState;
 
 import java.time.LocalDateTime;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,37 +17,37 @@ import java.time.LocalDateTime;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @Column(name = "annotation")
-    String annotation;
+    private String annotation;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    Category category;
+    private Category category;
     @Column(name = "created_on")
-    LocalDateTime createdOn = LocalDateTime.now();
+    private LocalDateTime createdOn = LocalDateTime.now();
     @Column(name = "event_date")
-    LocalDateTime eventDate;
+    private LocalDateTime eventDate;
     @Column(name = "description")
-    String description;
+    private String description;
     @Column(name = "initiator_id")
-    long initiatorId;
+    private long initiatorId;
     @Embedded
-    Location location;
+    private Location location;
     @Column(name = "paid")
-    boolean paid;
+    private boolean paid;
     @Column(name = "participant_limit")
-    int participantLimit;
+    private int participantLimit;
     @Column(name = "published_on")
-    LocalDateTime publishedOn;
+    private LocalDateTime publishedOn;
     @Column(name = "request_moderation")
-    boolean requestModeration;
+    private boolean requestModeration;
     @Column(name = "state")
     @Enumerated(EnumType.STRING)
-    EventState state = EventState.PENDING;
+    private EventState state = EventState.PENDING;
     @Column(name = "title")
-    String title;
+    private String title;
     @Transient
-    int confirmedRequests;
+    private int confirmedRequests;
 
     @Override
     public boolean equals(Object o) {

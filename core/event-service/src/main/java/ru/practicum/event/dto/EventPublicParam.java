@@ -12,17 +12,16 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventPublicParam {
-    String text;
-    List<Long> categories;
-    Boolean paid;
-    LocalDateTime rangeStart;
-    LocalDateTime rangeEnd;
-    Boolean onlyAvailable;
-    EventSort sort;
-    int from;
-    int size;
+    private String text;
+    private List<Long> categories;
+    private Boolean paid;
+    private LocalDateTime rangeStart;
+    private LocalDateTime rangeEnd;
+    private Boolean onlyAvailable;
+    private EventSort sort;
+    private int from;
+    private int size;
 
     public enum EventSort {
         EVENT_DATE("eventDate"),

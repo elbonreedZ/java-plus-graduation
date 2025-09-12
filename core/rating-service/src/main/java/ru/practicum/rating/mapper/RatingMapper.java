@@ -1,7 +1,6 @@
 package ru.practicum.rating.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import ru.practicum.rating.dto.RatingDto;
 import ru.practicum.rating.model.Rating;

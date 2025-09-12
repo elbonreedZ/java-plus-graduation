@@ -50,17 +50,13 @@ public class EventServiceImpl implements EventService {
     private final RequestClient requestClient;
 
     @Override
-    @Transactional
     public EventFullDto add(EventNewDto newEvent, long userId) {
         LocalDateTime eventDate = newEvent.getEventDate();
         if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ForbiddenException("Начало события ранее, чем через два часа: " + eventDate);
         }
         UserShortDto user = userClient.getById(userId);
-        long categoryId = newEvent.getCategory();
-        Category category = categoryService.findByIdOrThrow(categoryId);
-        Event event = eventMapper.toEvent(newEvent, category, userId);
-        event = eventRepository.save(event);
+        Event event = saveEvent(newEvent, userId);
         return eventMapper.toFullDto(event, user);
     }
 
@@ -243,6 +239,14 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAllByIdIn(eventsIds);
     }
 
+    @Transactional
+    private Event saveEvent(EventNewDto newEvent, long userId) {
+        long categoryId = newEvent.getCategory();
+        Category category = categoryService.findByIdOrThrow(categoryId);
+        Event event = eventMapper.toEvent(newEvent, category, userId);
+        return eventRepository.save(event);
+    }
+
     private Event findById(long eventId) {
         return eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие с id: " + eventId + " не существует"));
@@ -254,7 +258,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private Pageable toPageable(EventPublicParam.EventSort eventSort, int from, int size) {
-        Sort sort =  eventSort == null ?
+        Sort sort = eventSort == null ?
                 Sort.by(EventPublicParam.EventSort.EVENT_DATE.getField())
                 : Sort.by(Sort.Direction.DESC, eventSort.getField());
         return PageRequest.of(from, size, sort);
@@ -314,7 +318,7 @@ public class EventServiceImpl implements EventService {
         Map<Long, Integer> requestsByEventIds = requestClient.getCountConfirmedRequestsByEventIds(eventsIds);
 
         return events.stream().peek(event ->
-            event.setConfirmedRequests(requestsByEventIds.getOrDefault(event.getId(), 0))
+                event.setConfirmedRequests(requestsByEventIds.getOrDefault(event.getId(), 0))
         ).collect(Collectors.toList());
     }
 

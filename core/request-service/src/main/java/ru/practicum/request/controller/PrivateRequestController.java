@@ -25,7 +25,7 @@ public class PrivateRequestController {
     public ParticipationRequestDto create(@PathVariable(name = "userId") @Positive long userId,
                                           @RequestParam(name = "eventId") @Positive long eventId) {
         log.info("Пришел запрос на участие: userId = {}, eventId = {}", userId, eventId);
-        ParticipationRequestDto dto =  requestService.createParticipationRequest(userId, eventId);
+        ParticipationRequestDto dto = requestService.createParticipationRequest(userId, eventId);
         log.info("Сформированный запрос на участие: {}", dto);
         return dto;
     }
@@ -53,8 +53,8 @@ public class PrivateRequestController {
     @PatchMapping("/events/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
     public EventRequestStatusUpdateResult changeRequestsStatus(@PathVariable(name = "userId") @Positive long userId,
-                                                                    @PathVariable(name = "eventId") @Positive long eventId,
-                                                                    @RequestBody @Valid EventRequestStatusUpdateRequest updateRequest) {
+                                                               @PathVariable(name = "eventId") @Positive long eventId,
+                                                               @RequestBody @Valid EventRequestStatusUpdateRequest updateRequest) {
         log.info("Изменение статусов запросов на участие: userId = {}, eventId = {}, запросы: {}, статус = {}",
                 userId, eventId, updateRequest.getRequestIds(), updateRequest.getStatus());
         EventRequestStatusUpdateResult result = requestService.changeEventRequestsStatusByInitiator(updateRequest, userId, eventId);

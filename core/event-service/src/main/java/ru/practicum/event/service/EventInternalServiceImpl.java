@@ -13,6 +13,7 @@ import ru.practicum.event.repository.EventRepository;
 public class EventInternalServiceImpl implements EventInternalService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
+
     @Override
     public EventForRequestDto getById(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() ->

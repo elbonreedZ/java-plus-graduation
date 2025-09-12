@@ -10,8 +10,7 @@ import ru.practicum.rating.mark.Mark;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateRatingDto {
     @NotNull(message = "Поле mark должно быть указано.")
-    Mark mark;
+    private Mark mark;
 }

@@ -11,13 +11,12 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewUserRequest {
     @NotNull(message = "name должно быть указано.")
     @NotBlank(message = "name не должен быть пустым.")
-    String name;
+    private String name;
     @NotNull(message = "email должно быть указано.")
     @NotBlank(message = "email не должен быть пустым.")
     @Email(message = "Поле email должно быть указано корректно.")
-    String email;
+    private String email;
 }

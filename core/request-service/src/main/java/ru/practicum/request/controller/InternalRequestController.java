@@ -16,6 +16,7 @@ import java.util.Map;
 public class InternalRequestController implements RequestOperations {
 
     private final RequestInternalService requestService;
+
     @Override
     @PostMapping("/count")
     public Map<Long, Integer> getCountConfirmedRequestsByEventIds(@RequestBody List<Long> eventsIds) {

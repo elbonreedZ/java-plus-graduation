@@ -22,11 +22,10 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryServiceImpl implements CategoryService {
-    CategoryRepository categoryRepository;
-    CategoryMapper categoryMapper;
-    EventRepository eventRepository;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
+    private final EventRepository eventRepository;
 
     @Override
     @Transactional
@@ -94,7 +93,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private void checkCategoryOnExistByName(String name) {
         if (categoryRepository.findByNameIgnoreCase(name.toLowerCase()).isPresent()) {
-              throw new DataAlreadyInUseException("Category with this name has already exist.");
+            throw new DataAlreadyInUseException("Category with this name has already exist.");
         }
     }
 

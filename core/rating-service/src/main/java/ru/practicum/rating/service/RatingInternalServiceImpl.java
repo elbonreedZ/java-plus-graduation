@@ -2,8 +2,8 @@ package ru.practicum.rating.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.dto.rating.EventSearchByRatingParam;
 import ru.practicum.rating.repository.RatingRepository;
 
 import java.util.List;
@@ -13,8 +13,9 @@ import java.util.List;
 public class RatingInternalServiceImpl implements RatingInternalService {
 
     private final RatingRepository ratingRepository;
+
     @Override
-    public List<Long> getMostLikedEventIds(int limit) {
-        return ratingRepository.findMostLikedEvents(PageRequest.of(0, limit));
+    public List<Long> getMostLikedEventIds(EventSearchByRatingParam param) {
+        return ratingRepository.findMostLikedEvents(PageRequest.of(0, param.getLimit()));
     }
 }

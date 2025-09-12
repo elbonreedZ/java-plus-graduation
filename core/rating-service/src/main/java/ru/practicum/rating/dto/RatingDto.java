@@ -9,10 +9,9 @@ import ru.practicum.rating.mark.Mark;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RatingDto {
-    Long id;
-    Long userId;
-    Long eventId;
-    Mark mark;
+    private Long id;
+    private Long userId;
+    private Long eventId;
+    private Mark mark;
 }

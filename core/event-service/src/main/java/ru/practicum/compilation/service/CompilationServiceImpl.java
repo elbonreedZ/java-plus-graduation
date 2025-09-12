@@ -14,9 +14,7 @@ import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.errors.exceptions.NotFoundException;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.service.EventService;
 
 import java.util.ArrayList;

@@ -9,10 +9,9 @@ import java.util.List;
 
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventRequestStatusUpdateRequest {
-    List<Long> requestIds;
-    Status status;
+    private List<Long> requestIds;
+    private Status status;
 
     public enum Status {
         CONFIRMED,

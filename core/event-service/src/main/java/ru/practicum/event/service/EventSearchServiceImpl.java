@@ -1,20 +1,13 @@
 package ru.practicum.event.service;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.RatingClient;
-import ru.practicum.client.UserClient;
+import ru.practicum.dto.rating.EventSearchByRatingParam;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.dto.rating.EventSearchByRatingParam;
 
 import java.util.List;
 import java.util.Map;
@@ -32,8 +25,7 @@ public class EventSearchServiceImpl implements EventSearchService {
     @Transactional
     @Override
     public List<EventShortDto> searchMostLikedEvents(EventSearchByRatingParam eventSearchByRatingParam) {
-        int limit = eventSearchByRatingParam.getLimit();
-        List<Long> eventsIds = ratingClient.getMostLikedEventIds(limit);
+        List<Long> eventsIds = ratingClient.getMostLikedEventIds(eventSearchByRatingParam);
         List<Event> events = eventRepository.findAllByIdIn(eventsIds);
 
         Map<Long, Event> eventMap = events.stream()

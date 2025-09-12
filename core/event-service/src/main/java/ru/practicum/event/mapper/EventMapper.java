@@ -31,7 +31,7 @@ public interface EventMapper {
 
     default List<EventShortDto> toEventShortDtoList(List<Event> events, Map<Long, UserShortDto> users) {
         List<EventShortDto> eventShortDtos = new ArrayList<>();
-        for (Event event: events) {
+        for (Event event : events) {
             EventShortDto dto = new EventShortDto();
             dto.setEventDate(event.getEventDate());
             dto.setId(event.getId());

@@ -14,16 +14,15 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventShortDto {
-    long id;
-    String annotation;
-    CategoryDto category;
-    int confirmedRequests;
+    private long id;
+    private String annotation;
+    private CategoryDto category;
+    private int confirmedRequests;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime eventDate;
-    UserShortDto initiator;
-    boolean paid;
-    String title;
-    long views;
+    private LocalDateTime eventDate;
+    private UserShortDto initiator;
+    private boolean paid;
+    private String title;
+    private long views;
 }

@@ -1,15 +1,13 @@
 package ru.practicum.request.service;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.EventClient;
 import ru.practicum.client.UserClient;
 import ru.practicum.dto.event.EventForRequestDto;
 import ru.practicum.enums.event.EventState;
+import ru.practicum.enums.request.RequestStatus;
 import ru.practicum.errors.exceptions.ConditionsNotMetException;
 import ru.practicum.errors.exceptions.NotFoundException;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
@@ -17,7 +15,6 @@ import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
-import ru.practicum.enums.request.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 
 import java.time.LocalDateTime;
@@ -34,8 +31,11 @@ public class RequestServiceImpl implements RequestService {
     private final RequestMapper requestMapper;
 
     @Override
-    @Transactional
     public ParticipationRequestDto createParticipationRequest(long userId, long eventId) {
+
+        if (requestRepository.existsByEventIdAndRequesterId(eventId, userId)){
+            throw new ConditionsNotMetException("Нельзя добавить повторный запрос на участие в событии");
+        }
 
         EventForRequestDto event = eventClient.getById(eventId);
 
@@ -51,27 +51,7 @@ public class RequestServiceImpl implements RequestService {
 
         userClient.checkUserExists(userId);
 
-        RequestStatus status = RequestStatus.PENDING;
-        if (event.getParticipantLimit() == 0) {
-            status = RequestStatus.CONFIRMED;
-        } else if (!event.getRequestModeration()) {
-            status = RequestStatus.CONFIRMED;
-        }
-
-        Request request = Request.builder()
-                .eventId(event.getId())
-                .requesterId(userId)
-                .status(status)
-                .created(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS))
-                .build();
-
-        try {
-            request = requestRepository.save(request);
-        } catch (DataIntegrityViolationException e) {
-            throw new ConditionsNotMetException("Нельзя добавить повторный запрос на участие в событии");
-        }
-
-        return requestMapper.toDto(request);
+        return requestMapper.toDto(saveRequest(event, userId));
     }
 
     @Override
@@ -137,6 +117,24 @@ public class RequestServiceImpl implements RequestService {
         return requestMapper.toDto(request);
     }
 
+    @Transactional
+    private Request saveRequest(EventForRequestDto event, long userId) {
+        RequestStatus status = RequestStatus.PENDING;
+        if (event.getParticipantLimit() == 0) {
+            status = RequestStatus.CONFIRMED;
+        } else if (!event.getRequestModeration()) {
+            status = RequestStatus.CONFIRMED;
+        }
+
+        Request request = Request.builder()
+                .eventId(event.getId())
+                .requesterId(userId)
+                .status(status)
+                .created(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS))
+                .build();
+
+        return requestRepository.save(request);
+    }
     private void checkParticipantLimit(int participantLimit, int confirmedRequests) {
         if (confirmedRequests >= participantLimit && participantLimit != 0) {
             throw new ConditionsNotMetException("У события заполнен лимит участников");

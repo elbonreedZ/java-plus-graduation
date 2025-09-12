@@ -2,10 +2,8 @@ package ru.practicum.request.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.request.model.Request;
 import ru.practicum.request.repository.RequestRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +13,7 @@ import java.util.stream.Collectors;
 public class RequestInternalServiceImpl implements RequestInternalService {
 
     private final RequestRepository requestRepository;
+
     @Override
     public Map<Long, Integer> getCountConfirmedRequestsByEventIds(List<Long> eventsIds) {
         return requestRepository.findCountConfirmedByEventIds(eventsIds).stream()

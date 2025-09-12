@@ -8,8 +8,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryDto {
-    Long id;
-    String name;
+    private Long id;
+    private String name;
 }

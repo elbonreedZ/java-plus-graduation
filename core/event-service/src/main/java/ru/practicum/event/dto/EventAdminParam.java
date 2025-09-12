@@ -1,6 +1,8 @@
 package ru.practicum.event.dto;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.enums.event.EventState;
@@ -10,12 +12,11 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventAdminParam {
-    List<Long> users;
-    List<EventState> states;
-    List<Long> categories;
-    LocalDateTime rangeStart;
-    LocalDateTime rangeEnd;
-    Pageable pageable;
+    private List<Long> users;
+    private List<EventState> states;
+    private List<Long> categories;
+    private LocalDateTime rangeStart;
+    private LocalDateTime rangeEnd;
+    private Pageable pageable;
 }

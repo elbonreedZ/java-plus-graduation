@@ -1,7 +1,7 @@
 package ru.practicum.event.service;
 
-import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.dto.rating.EventSearchByRatingParam;
+import ru.practicum.event.dto.EventShortDto;
 
 import java.util.List;
 

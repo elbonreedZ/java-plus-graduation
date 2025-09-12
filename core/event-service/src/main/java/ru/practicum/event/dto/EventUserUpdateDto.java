@@ -16,24 +16,23 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventUserUpdateDto {
     @Size(max = 2000, min = 20, message = "Длина аннотации должна быть от 20 до 2000 символов")
-    String annotation;
-    Long category;
+    private String annotation;
+    private Long category;
     @Size(max = 7000, min = 20, message = "Длина описания должна быть от 20 до 7000 символов")
-    String description;
+    private String description;
     @Future(message = "Дата события должна быть позже настоящего момента")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime eventDate;
-    Location location;
-    Boolean paid;
+    private LocalDateTime eventDate;
+    private Location location;
+    private Boolean paid;
     @PositiveOrZero(message = "Число участников должно быть больше или равно нулю")
-    Integer participantLimit;
-    Boolean requestModeration;
-    StateAction stateAction;
+    private Integer participantLimit;
+    private Boolean requestModeration;
+    private StateAction stateAction;
     @Size(max = 120, min = 3, message = "Длина заголовка должна быть от 3 до 120 символов")
-    String title;
+    private String title;
 
     public enum StateAction {
         SEND_TO_REVIEW,

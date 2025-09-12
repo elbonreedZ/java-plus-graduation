@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.contract.RatingOperations;
+import ru.practicum.dto.rating.EventSearchByRatingParam;
 import ru.practicum.rating.service.RatingInternalService;
 
 import java.util.List;
@@ -16,9 +17,10 @@ import java.util.List;
 public class InternalRatingController implements RatingOperations {
 
     private final RatingInternalService ratingInternalService;
+
     @Override
     @GetMapping
-    public List<Long> getMostLikedEventIds(@RequestParam int limit) {
-        return ratingInternalService.getMostLikedEventIds(limit);
+    public List<Long> getMostLikedEventIds(@RequestParam EventSearchByRatingParam param) {
+        return ratingInternalService.getMostLikedEventIds(param);
     }
 }
