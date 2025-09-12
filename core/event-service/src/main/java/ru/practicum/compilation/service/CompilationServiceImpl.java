@@ -17,8 +17,9 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.service.EventService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,14 +70,9 @@ public class CompilationServiceImpl implements CompilationService {
         Boolean isPinned = param.getIsPinned();
         int from = param.getFrom();
         int size = param.getSize();
-        List<Compilation> compilations = compilationRepository.findAllByPinned(isPinned, PageRequest.of(from / size, size));
 
-        List<CompilationDto> compilationDtoList = new ArrayList<>();
-        for (Compilation compilation : compilations) {
-            CompilationDto compilationDto = mapToDto(compilation);
-            compilationDtoList.add(compilationDto);
-        }
-        return compilationDtoList;
+        List<Compilation> compilations = compilationRepository.findAllByPinned(isPinned, PageRequest.of(from / size, size));
+        return mapToDtoList(compilations);
     }
 
     @Override
@@ -84,6 +80,32 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFoundException("Compilation with id = " + compId + " not found."));
         return mapToDto(compilation);
+    }
+
+    private List<CompilationDto> mapToDtoList(List<Compilation> compilations) {
+
+        List<Event> events = compilations.stream()
+                .flatMap(c -> c.getEvents().stream())
+                .toList();
+
+        List<EventShortDto> eventsDto = eventService.getShortEvents(events);
+
+        Map<Long, EventShortDto> eventDtoById = eventsDto.stream()
+                .collect(Collectors.toMap(EventShortDto::getId, dto -> dto));
+
+
+        return compilations.stream()
+                .map(compilation -> {
+                    List<EventShortDto> compilationEvents = compilation.getEvents().stream()
+                            .map(Event::getId)
+                            .map(eventDtoById::get)
+                            .toList();
+
+                    CompilationDto dto = compilationMapper.toCompilationDto(compilation);
+                    dto.setEvents(compilationEvents);
+                    return dto;
+                })
+                .toList();
     }
 
     private CompilationDto mapToDto(Compilation compilation) {

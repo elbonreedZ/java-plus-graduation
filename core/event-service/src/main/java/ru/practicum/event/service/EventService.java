@@ -6,6 +6,7 @@ import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EventService {
     EventFullDto add(EventNewDto newEvent, long userId);
