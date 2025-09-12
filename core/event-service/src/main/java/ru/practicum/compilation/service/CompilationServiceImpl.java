@@ -17,8 +17,9 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.service.EventService;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,11 +85,11 @@ public class CompilationServiceImpl implements CompilationService {
 
     private List<CompilationDto> mapToDtoList(List<Compilation> compilations) {
 
-        List<Event> events = compilations.stream()
+        Set<Event> events = compilations.stream()
                 .flatMap(c -> c.getEvents().stream())
-                .toList();
+                .collect(Collectors.toSet());
 
-        List<EventShortDto> eventsDto = eventService.getShortEvents(events);
+        List<EventShortDto> eventsDto = eventService.getShortEvents(events.stream().toList());
 
         Map<Long, EventShortDto> eventDtoById = eventsDto.stream()
                 .collect(Collectors.toMap(EventShortDto::getId, dto -> dto));
