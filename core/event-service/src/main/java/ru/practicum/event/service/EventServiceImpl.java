@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -334,8 +335,8 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<EventShortDto> mapToShortDtos(List<Event> events) {
-        List<Long> usersIds = events.stream().map(Event::getInitiatorId).toList();
-        Map<Long, UserShortDto> usersByIds = userClient.getAllUsersByIds(usersIds);
+        Set<Long> usersIds = events.stream().map(Event::getInitiatorId).collect(Collectors.toSet());
+        Map<Long, UserShortDto> usersByIds = userClient.getAllUsersByIds(new ArrayList<>(usersIds));
         List<EventShortDto> eventShortDtos = eventMapper.toEventShortDtoList(events, usersByIds);
         eventShortDtos = applyViewsToEvents(eventShortDtos);
         return eventShortDtos;
