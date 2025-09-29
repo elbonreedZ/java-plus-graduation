@@ -1,10 +1,7 @@
 package ru.practicum.stats.analyzer.dal.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.Instant;
 
@@ -14,6 +11,8 @@ import java.time.Instant;
 @ToString
 @Builder
 @Table(name = "user_action", schema = "stats_analyzer")
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserAction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
