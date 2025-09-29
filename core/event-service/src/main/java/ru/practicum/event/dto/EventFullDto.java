@@ -1,11 +1,9 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.enums.event.EventState;
@@ -35,5 +33,5 @@ public class EventFullDto {
     private boolean requestModeration;
     private EventState state;
     private String title;
-    private long views;
+    private double rating;
 }

@@ -1,12 +1,10 @@
 package ru.practicum.event.service;
 
 import org.springframework.data.domain.Pageable;
-import ru.practicum.dto.StatDto;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
 
 import java.util.List;
-import java.util.Map;
 
 public interface EventService {
     EventFullDto add(EventNewDto newEvent, long userId);
@@ -23,10 +21,14 @@ public interface EventService {
 
     List<EventShortDto> getAllPublic(EventPublicParam params);
 
-    EventFullDto getByIdPublic(long eventId, StatDto statDto);
+    EventFullDto getByIdPublic(long eventId, long userId);
 
     List<EventShortDto> getShortEvents(List<Event> events);
 
     List<Event> getAllByIds(List<Long> eventsIds);
+
+    List<EventShortDto> getRecommendations(long userId);
+
+    void like(long userId, long eventId);
 
 }

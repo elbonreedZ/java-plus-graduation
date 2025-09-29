@@ -1,11 +1,9 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.dto.user.UserShortDto;
 
@@ -24,5 +22,5 @@ public class EventShortDto {
     private UserShortDto initiator;
     private boolean paid;
     private String title;
-    private long views;
+    private double rating;
 }
