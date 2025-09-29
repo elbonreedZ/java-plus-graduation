@@ -1,9 +1,7 @@
 package ru.practicum.event.dto;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.enums.event.EventState;
 
